@@ -47,6 +47,7 @@ const marketIds = [
 ];
 
 exports.handler = async (event) => {
+// const main = async () => {
   try {
     const currentTimestamp = Math.floor(Date.now() / 1000).toString();
 
@@ -83,40 +84,70 @@ exports.handler = async (event) => {
 
     const aprList = vaultSupplyAprs[1];
 
-    await connection.connect();
+    const data = await new Promise((resolve, reject) => {
+      connection.connect(function (err) {
+        if (err) {
+          reject(err);
+        }
 
-    // update vaults info
-    for (let ii = 0; ii < vaultIds.length; ii++) {
-      const supplyApr = utils.formatEther(aprList[ii]);
-      await connection.query(
-        `INSERT INTO vault_aprs (vaultid, supply_apr, timestamp) VALUES ('${vaultIds[ii]}', '${supplyApr}', '${currentTimestamp}')`
-      );
-      // console.log(vaultIds[ii], utils.formatEther(aprList[ii]));
-    }
+        let vaultQuery = `INSERT INTO vault_aprs (vaultid, supply_apr, apr_time) VALUES `;
+        for (let ii = 0; ii < vaultIds.length; ii++) {
+          const supplyApr = utils.formatEther(aprList[ii]);
+          vaultQuery += `('${vaultIds[ii]}', '${supplyApr}', '${currentTimestamp}')`;
 
-    // update market info
-    for (let ii = 0; ii < marketIds.length; ii++) {
-      const marketInd = ii * 2 + vaultIds.length;
-      const marketSupplyAprs = aprfeedAbicorder.decode(
-        ["uint256", "uint256"],
-        aprList[marketInd]
-      );
+          if (ii < vaultIds.length - 1) vaultQuery += `, `;
+        }
 
-      const usualSupplyApr = utils.formatEther(marketSupplyAprs[0]);
-      const premiumSupplyApr = utils.formatEther(marketSupplyAprs[1]);
-      const borrowApr = utils.formatEther(aprList[marketInd + 1]);
+        // console.log(vaultQuery);
+        connection.query(vaultQuery, function (err, result) {
+          if (err) {
+            console.log("VaultAPR Error->" + err);
+            reject(err);
+          }
 
-      await connection.query(
-        `INSERT INTO market_aprs (marketid, supply_apr_usual, supply_apr_premium, borrow_apr, timestamp) VALUES ('${marketIds[ii]}', '${usualSupplyApr}', '${premiumSupplyApr}', '${borrowApr}', '${currentTimestamp}')`
-      );
+          resolve(result);
+        });
 
-      // console.log(marketIds[ii], utils.formatEther(marketSupplyAprs[0]));
-      // console.log(marketIds[ii], utils.formatEther(marketSupplyAprs[1]));
-      // console.log(marketIds[ii], utils.formatEther(aprList[marketInd + 1]));
-    }
+        // update market info
+        let marketQuery = `INSERT INTO market_aprs (marketid, supply_apr_usual, supply_apr_premium, borrow_apr, apr_time) VALUES `;
+        for (let ii = 0; ii < marketIds.length; ii++) {
+          const marketInd = ii * 2 + vaultIds.length;
+          const marketSupplyAprs = aprfeedAbicorder.decode(
+            ["uint256", "uint256"],
+            aprList[marketInd]
+          );
 
-    await connection.end();
+          const usualSupplyApr = utils.formatEther(marketSupplyAprs[0]);
+          const premiumSupplyApr = utils.formatEther(marketSupplyAprs[1]);
+          const borrowApr = utils.formatEther(aprList[marketInd + 1]);
+
+          marketQuery += `('${marketIds[ii]}', '${usualSupplyApr}', '${premiumSupplyApr}', '${borrowApr}', '${currentTimestamp}')`;
+          if (ii < marketIds.length - 1) marketQuery += `, `;
+        }
+
+        // console.log(marketQuery);
+        connection.query(marketQuery, function (err, result) {
+          if (err) {
+            console.log("MarketAPR Error->" + err);
+            reject(err);
+          }
+
+          resolve(result);
+        });
+      });
+    });
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(data),
+    };
   } catch (error) {
     console.log(error);
+    return {
+      statusCode: 400,
+      body: err.message,
+    };
   }
 };
+
+// main().finally(() => console.log("finally"));
