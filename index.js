@@ -46,8 +46,7 @@ const marketIds = [
   "0xaccc9ce078cc2228bc0a0328b0f207311a9dcdfd96d7e34ac829a38e8af953d1",
 ];
 
-// exports.handler = async (event) => {
-const main = async () => {
+exports.handler = async (event) => {
   try {
     const currentTimestamp = Math.floor(Date.now() / 1000).toString();
 
@@ -121,7 +120,3 @@ const main = async () => {
     console.log(error);
   }
 };
-
-main()
-  .then(() => console.log("executed"))
-  .finally(() => console.log("finaled"));
