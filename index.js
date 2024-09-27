@@ -86,7 +86,7 @@ exports.handler = async (event) => {
     await connection.connect();
 
     // update vaults info
-    for (let ii = 0; ii <= vaultIds.length; ii++) {
+    for (let ii = 0; ii < vaultIds.length; ii++) {
       const supplyApr = utils.formatEther(aprList[ii]);
       await connection.query(
         `INSERT INTO vault_aprs (vaultid, supply_apr, timestamp) VALUES ('${vaultIds[ii]}', '${supplyApr}', '${currentTimestamp}')`
