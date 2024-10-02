@@ -5,10 +5,11 @@ const config = require("./config.json");
 const AprFeedAbi = require("./abis/aprfeedAbi.json");
 const MulticallAbi = require("./abis/multicallAbi.json");
 
-const multicallAddr = "0xF7d11c74B5706155d7C6DBe931d590611a371a8a";
-const aprfeedAddr = "0x49b071664908299de9afa9e81f560b5e884046e0";
+const multicallAddr = "0x8358d18E99F44E39ea90339c4d6E8C36101f8161";
+const aprfeedAddr = "0x9c2CE59eCC6930fFd12bE4944B482df008486D7f";
+
 const provider = new providers.JsonRpcProvider(
-  "https://testnet.evm.nodes.onflow.org"
+  "https://mainnet.evm.nodes.onflow.org"
 );
 const multicallContrcat = new Contract(multicallAddr, MulticallAbi, provider);
 
@@ -24,30 +25,16 @@ const connection = mysql.createConnection({
 });
 
 const vaultIds = [
-  "0x8C1CEc925beB7944941b612B70aE280C984FA633",
-  "0x6dCbc5E23Aab3CBb702974D5cDb3837dc0b2e9D6",
-  "0x5c53Fe805381e588Aa17dA5a0635edc4D4bab8DF",
-  "0x60e72F2D276619115a11BFb3Cf89B2f28432887E",
-  "0xAe631435Fc9096047Bc2698c705382F4DA94663B",
+  "0xe2aaC46C1272EEAa49ec7e7B9e7d34B90aaDB966",
+  "0x8c921f740B0065C7cE28EB93c7056d92C4735E7b",
 ];
-
 const marketIds = [
-  "0x6bed9b33d3ee7142f53ba4cf930d61e4aff25a4677150cfe354e9b75a2ee2547",
-  "0x75a964099ef99a0c7dc893c659a4dec8f6beeb3d7c9705e28df7d793694b6164",
-  "0x0f0de7ddadc86a7be1a3d3e1a9d2e8090a791299bcf0985626ae4ebd65add87e",
-  "0xa60293202460d7df68151ac06ec00f6b3dfb5ff119ca579107673bd843547875",
-  "0x0f510c5cca1c8b24bbbccb04833d1243dcb4e6ae07e4f39397dbd9fa6534dece",
-  "0x16893ff750ddec34e292a65a8cb6a014627b3f4ad0b2b82c6da4cc28d1e0576d",
-  "0x19993995e633d686a7a7a4db10d363c2f6dddc744f3ec31e6f8f12d6344bc25d",
-  "0x81721c60cf152bf1395d9c1cae5ab87453bba99636c4a3e3f985570e4a7bcb7c",
-  "0xbb1c25a3dd81910d745b07e0926dc1cc7be6f09c2c5cc025c0d581e44c21c67f",
-  "0x595199e0d78e7769da797d595abf4801bf0ed2bedd0e745a24bb4aebc0310e53",
-  "0x65e3819781cfb3d6865688fe41757484af047fc1aeaca1752b0bf4cacaae555c",
-  "0xaccc9ce078cc2228bc0a0328b0f207311a9dcdfd96d7e34ac829a38e8af953d1",
+  "0x3dca1854528f8a9bff744889198eb07ceacdfe25937450965e62103cefc69aa5",
+  "0x2ae0c40dc06f58ff0243b44116cd48cc4bdab19e2474792fbf1f413600ceab3a",
 ];
 
 exports.handler = async (event) => {
-// const main = async () => {
+  // const main = async () => {
   try {
     const currentTimestamp = Math.floor(Date.now() / 1000).toString();
 
@@ -145,7 +132,7 @@ exports.handler = async (event) => {
     console.log(error);
     return {
       statusCode: 400,
-      body: err.message,
+      body: error.message,
     };
   }
 };
